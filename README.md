@@ -1,2 +1,2 @@
 # TabCap
-Let's copy image and paste by Alt + D
+Let's copy the image and paste it by Alt + D.
