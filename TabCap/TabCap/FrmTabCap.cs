@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 /// <summary>
 /// TabCap
 /// </summary>
 namespace TabCap
 {
+    #region Enum
+
     #region ControlsInTab
 
     /// <summary>
@@ -30,15 +35,64 @@ namespace TabCap
     }
     #endregion
 
+    #region ModeAddForTab
+
+    /// <summary>
+    /// ModeAddForTab
+    /// </summary>
+    public enum ModeAddForTab
+    {
+        /// <summary>
+        /// Normal
+        /// </summary>
+        Normal = 0,
+
+        /// <summary>
+        /// Read
+        /// </summary>
+        Read = 1
+    }
+    #endregion
+
+    #region FormatListImage
+
+    /// <summary>
+    /// FormatListImage
+    /// </summary>
+    public enum FormatListImage
+    {
+        /// <summary>
+        /// Image
+        /// </summary>
+        Image = 0,
+
+        /// <summary>
+        /// FileName
+        /// </summary>
+        FileName = 1
+    }
+    #endregion
+
+    #endregion
+
     /// <summary>
     /// frmTabCap
     /// </summary>
     public partial class FrmTabCap : Form
     {
+        #region Field
+
         /// <summary>
         /// TabCounter
         /// </summary>
         private int TabCounter = 1;
+
+        /// <summary>
+        /// NameNowGroup
+        /// </summary>
+        private string NameNowTab = string.Empty;
+
+        #endregion
 
         #region Event
 
@@ -57,53 +111,7 @@ namespace TabCap
         /// <param name="e"></param>
         private void btnPaste_Click(object sender, EventArgs e)
         {
-            if (TabCounter == int.MaxValue)
-            {
-                return;
-            }
-
-            var ins = Clipboard.GetImage();
-
-            if (ins == null)
-            {
-                return;
-            }
-
-            TabPage tb = new TabPage();
-
-            tb.Controls.Add(new PictureBox() { Size = ins.Size, Location = new Point() { X = 0, Y = 50 } });
-            tb.Controls.Add(new Label()
-            {
-                Size = new Size() { Height = 20, Width = 60 }
-                ,
-                Location = new Point() { X = 5, Y = 5 }
-                ,
-                Text = "TabName："
-                ,
-                TextAlign = ContentAlignment.MiddleLeft
-            });
-            tb.Controls.Add(new TextBox()
-            {
-                Size = new Size() { Height = 20, Width = 100 }
-                ,
-                Location = new Point() { X = 65, Y = 5 }
-                ,
-                Text = "(Empty" + TabCounter + ")"
-                ,
-            });
-            tb.Text = "(Empty" + TabCounter + ")";
-
-            tabControl1.TabPages.Add(tb);
-            tabControl1.SelectedTab = tabControl1.TabPages[tabControl1.TabPages.Count - 1];
-            tabControl1.SelectedTab.AutoScroll = true;
-
-            var a = (PictureBox)(tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls[(int)ControlsInTab.PictureBox]);
-            a.Image = ins;
-
-            var b = (TextBox)(tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls[(int)ControlsInTab.TextBox]);
-            b.TextChanged += TextChangeControlsInTab;
-
-            TabCounter += 1;
+            AddForTab(mode: ModeAddForTab.Normal);
         }
 
         /// <summary>
@@ -113,19 +121,20 @@ namespace TabCap
         /// <param name="e"></param>
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (tabControl1.TabPages.Count == 0)
+            TabControl nowTab = GetNowTab();
+            if (nowTab.TabPages.Count == 0)
             {
                 return;
             }
 
-            tabControl1.TabPages.RemoveAt(tabControl1.TabPages.Count - 1);
+            nowTab.TabPages.RemoveAt(nowTab.TabPages.Count - 1);
 
-            if (tabControl1.TabPages.Count == 0)
+            if (nowTab.TabPages.Count == 0)
             {
                 return;
             }
 
-            tabControl1.SelectedTab = tabControl1.TabPages[tabControl1.TabPages.Count - 1];
+            nowTab.SelectedTab = nowTab.TabPages[nowTab.TabPages.Count - 1];
 
         }
 
@@ -136,7 +145,29 @@ namespace TabCap
         /// <param name="e"></param>
         private void frmTabCap_Load(object sender, EventArgs e)
         {
-            this.Size = new Size() { Height = 500, Width = 500 };
+            this.Size = new Size() { Height = 500, Width = 700 };
+
+            short marginSize = 2;
+            pnlGroup.Size = new Size()
+            {
+                Height = this.Size.Height - (marginSize * 2),
+                Width = this.Size.Width - (marginSize * 2)
+            };
+            pnlGroup.Location = new Point() { X = marginSize, Y = marginSize };
+
+            string pnlName = "new";
+            pnlGroup.Controls.Add(new TabControl()
+            {
+                Size = new Size()
+                {
+                    Height = pnlGroup.Size.Height - (marginSize * 2),
+                    Width = pnlGroup.Width - (marginSize * 2)
+                },
+                Name = pnlName,
+                Location = new Point() { X = marginSize, Y = marginSize },
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
+            });
+            NameNowTab = pnlName;
         }
 
         /// <summary>
@@ -146,13 +177,14 @@ namespace TabCap
         /// <param name="e"></param>
         private void btnSaveFocusedTab_Click(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedTab is null)
+            TabControl nowTab = GetNowTab();
+            if (nowTab.SelectedTab is null)
             {
                 MessageBox.Show("Tab is empty");
                 return;
             }
 
-            if (string.IsNullOrEmpty(tabControl1.SelectedTab.Text))
+            if (string.IsNullOrEmpty(nowTab.SelectedTab.Text))
             {
                 MessageBox.Show("Name is empty");
                 return;
@@ -161,11 +193,11 @@ namespace TabCap
             using (var sa = new SaveFileDialog())
             {
                 sa.Filter = "PngFormatImage|*.Png";
-                sa.FileName = tabControl1.SelectedTab.Text;
+                sa.FileName = nowTab.SelectedTab.Text;
 
                 sa.ShowDialog();
 
-                var ins = (PictureBox)(tabControl1.SelectedTab.Controls[(int)ControlsInTab.PictureBox]);
+                var ins = (PictureBox)(nowTab.SelectedTab.Controls[(int)ControlsInTab.PictureBox]);
                 ins.Image.Save(sa.FileName, ImageFormat.Png);
 
             }
@@ -178,7 +210,9 @@ namespace TabCap
         /// <param name="e"></param>
         private void btnSaveAllTab_Click(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedTab is null)
+            TabControl nowTab = GetNowTab();
+
+            if (nowTab.SelectedTab is null)
             {
                 MessageBox.Show("Tab is empty");
                 return;
@@ -186,8 +220,14 @@ namespace TabCap
 
             using (var sa = new FolderBrowserDialog())
             {
-                sa.ShowDialog();
-                foreach (TabPage item in tabControl1.TabPages)
+                var result = sa.ShowDialog();
+
+                if (result != DialogResult.OK)
+                {
+                    return;
+                }
+
+                foreach (TabPage item in nowTab.TabPages)
                 {
                     var ins = (PictureBox)item.Controls[(int)ControlsInTab.PictureBox];
                     ins.Image.Save(sa.SelectedPath + "\\" + item.Text + ".Png", ImageFormat.Png);
@@ -202,10 +242,196 @@ namespace TabCap
         /// <param name="e"></param>
         private void TextChangeControlsInTab(object sender, EventArgs e)
         {
-            var ins = (TextBox)(tabControl1.SelectedTab.Controls[(int)ControlsInTab.TextBox]);
-            tabControl1.SelectedTab.Text = ins.Text;
+            TabControl nowTab = GetNowTab();
+
+            var ins = (TextBox)(nowTab.SelectedTab.Controls[(int)ControlsInTab.TextBox]);
+            nowTab.SelectedTab.Text = ins.Text;
+        }
+
+        /// <summary>
+        /// FrmTabCap_FormClosing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FrmTabCap_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            TabControl nowTab = GetNowTab();
+
+            if (nowTab.TabCount == 0)
+            {
+                return;
+            }
+
+            DialogResult result = MessageBox.Show("Do you accept to close this?", "Select", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                return;
+            }
+
+            e.Cancel = true;
+        }
+
+        /// <summary>
+        /// btnReadCap_Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnReadCap_Click(object sender, EventArgs e)
+        {
+            using (var ins = new OpenFileDialog())
+            {
+                ins.Filter = "PngFormatImage|*.Png";
+                ins.Multiselect = true;
+                ins.ShowDialog();
+
+                var select = ins.FileNames;
+
+                if (select.Length == 0)
+                {
+                    return;
+                }
+
+                AddForTab(mode: ModeAddForTab.Read, path: select);
+            }
+        }
+
+        #endregion
+
+        #region Method
+
+        private void AddForTab(ModeAddForTab mode, string[] path = null)
+        {
+            if (TabCounter == int.MaxValue)
+            {
+                return;
+            }
+
+            List<ImageTabCap> ins = null;
+
+            switch (mode)
+            {
+                case ModeAddForTab.Normal:
+                    ins = GetImage();
+                    break;
+                case ModeAddForTab.Read:
+                    ins = GetImage(path);
+                    break;
+                default:
+                    break;
+            }
+
+            if (ins == null || ins.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var item in ins.OrderBy(x => x.CreationTime))
+            {
+                TabPage tb = new TabPage();
+
+                tb.Controls.Add(new PictureBox() { Size = item.Image.Size, Location = new Point() { X = 0, Y = 50 } });
+                tb.Controls.Add(new Label()
+                {
+                    Size = new Size() { Height = 20, Width = 60 }
+                    ,
+                    Location = new Point() { X = 5, Y = 5 }
+                    ,
+                    Text = "TabName："
+                    ,
+                    TextAlign = ContentAlignment.MiddleLeft
+                });
+                tb.Controls.Add(new TextBox()
+                {
+                    Size = new Size() { Height = 20, Width = 100 }
+                    ,
+                    Location = new Point() { X = 65, Y = 5 }
+                    ,
+                    Text = string.IsNullOrEmpty(item.FileName) ? "(Empty" + TabCounter + ")"
+                            : item.FileName
+                    ,
+                });
+                tb.Text = string.IsNullOrEmpty(item.FileName) ? "(Empty" + TabCounter + ")"
+                            : item.FileName;
+
+                var nowTab = (TabControl)this.Controls.Find(NameNowTab, true)[0];
+
+                nowTab.TabPages.Add(tb);
+                nowTab.SelectedTab = nowTab.TabPages[nowTab.TabPages.Count - 1];
+                nowTab.SelectedTab.AutoScroll = true;
+
+                var a = (PictureBox)(nowTab.TabPages[nowTab.TabPages.Count - 1].Controls[(int)ControlsInTab.PictureBox]);
+                a.Image = item.Image;
+
+                var b = (TextBox)(nowTab.TabPages[nowTab.TabPages.Count - 1].Controls[(int)ControlsInTab.TextBox]);
+                b.TextChanged += TextChangeControlsInTab;
+
+                TabCounter += 1;
+            }
+        }
+
+        private static List<ImageTabCap> GetImage()
+        {
+            Image result = Clipboard.GetImage();
+
+            if (result is null)
+            {
+                return null;
+            }
+
+            return new List<ImageTabCap>() { new ImageTabCap(result, "", null) };
+        }
+
+        private static List<ImageTabCap> GetImage(string[] path)
+        {
+            if (path == null || path.Length == 0)
+            {
+                return null;
+            }
+
+            List<ImageTabCap> result = new List<ImageTabCap>();
+
+            foreach (var item in path)
+            {
+                using (FileStream fs = File.OpenRead(item))
+                {
+                    result.Add(new ImageTabCap(Image.FromStream(fs, false, false),
+                                    Path.GetFileNameWithoutExtension(item),
+                                    File.GetCreationTime(item)));
+                }
+            }
+
+            return result;
+        }
+
+        private TabControl GetNowTab()
+        {
+            var result = this.Controls.Find(NameNowTab, true);
+
+            if (result.Length == 0)
+            {
+                return null;
+            }
+
+            return (TabControl)result[0];
         }
 
         #endregion
     }
+
+    #region Class
+
+    public class ImageTabCap
+    {
+        public Image Image { get; set; }
+        public string FileName { get; set; }
+        public DateTime? CreationTime { get; set; }
+
+        public ImageTabCap(Image image, string fileName, DateTime? creationTime)
+        {
+            Image = image;
+            FileName = fileName;
+            CreationTime = creationTime;
+        }
+    }
+    #endregion
 }
