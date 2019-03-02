@@ -244,8 +244,16 @@ namespace TabCap
         {
             TabControl nowTabControl = GetNowTabControl();
 
+            // A system get an object.
             var targetTextBox = (TextBox)(nowTabControl.SelectedTab.Controls[(int)ControlsInTab.TextBox]);
             nowTabControl.SelectedTab.Text = targetTextBox.Text;
+
+            // The tab get a length of text.
+            if (targetTextBox.Text.Length != 0)
+            {
+                short space = 10;
+                targetTextBox.Width = TextRenderer.MeasureText(targetTextBox.Text, this.Font).Width + space;
+            }
         }
 
         /// <summary>
@@ -348,7 +356,6 @@ namespace TabCap
                     ,
                     Text = string.IsNullOrEmpty(item.FileName) ? "(Empty" + TabCounter + ")"
                             : item.FileName
-                    ,
                 });
                 tb.Text = string.IsNullOrEmpty(item.FileName) ? "(Empty" + TabCounter + ")"
                             : item.FileName;
