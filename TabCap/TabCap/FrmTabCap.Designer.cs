@@ -32,10 +32,10 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSaveFocusedTab = new System.Windows.Forms.Button();
             this.btnSaveAllTab = new System.Windows.Forms.Button();
-            this.pnlGroup = new System.Windows.Forms.Panel();
+            this.pnlTab = new System.Windows.Forms.Panel();
             this.btnReadCap = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel1.SuspendLayout();
+            this.pnlBtn = new System.Windows.Forms.Panel();
+            this.pnlBtn.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnPaste
@@ -82,15 +82,15 @@
             this.btnSaveAllTab.UseVisualStyleBackColor = true;
             this.btnSaveAllTab.Click += new System.EventHandler(this.btnSaveAllTab_Click);
             // 
-            // pnlGroup
+            // pnlTab
             // 
-            this.pnlGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.pnlTab.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlGroup.Location = new System.Drawing.Point(4, 4);
-            this.pnlGroup.Name = "pnlGroup";
-            this.pnlGroup.Size = new System.Drawing.Size(584, 273);
-            this.pnlGroup.TabIndex = 6;
+            this.pnlTab.Location = new System.Drawing.Point(4, 4);
+            this.pnlTab.Name = "pnlTab";
+            this.pnlTab.Size = new System.Drawing.Size(584, 273);
+            this.pnlTab.TabIndex = 6;
             // 
             // btnReadCap
             // 
@@ -103,33 +103,33 @@
             this.btnReadCap.UseVisualStyleBackColor = true;
             this.btnReadCap.Click += new System.EventHandler(this.btnReadCap_Click);
             // 
-            // panel1
+            // pnlBtn
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.pnlBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.btnReadCap);
-            this.panel1.Controls.Add(this.btnPaste);
-            this.panel1.Controls.Add(this.btnDelete);
-            this.panel1.Controls.Add(this.btnSaveAllTab);
-            this.panel1.Controls.Add(this.btnSaveFocusedTab);
-            this.panel1.Location = new System.Drawing.Point(4, 283);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(584, 30);
-            this.panel1.TabIndex = 7;
+            this.pnlBtn.Controls.Add(this.btnReadCap);
+            this.pnlBtn.Controls.Add(this.btnPaste);
+            this.pnlBtn.Controls.Add(this.btnDelete);
+            this.pnlBtn.Controls.Add(this.btnSaveAllTab);
+            this.pnlBtn.Controls.Add(this.btnSaveFocusedTab);
+            this.pnlBtn.Location = new System.Drawing.Point(4, 283);
+            this.pnlBtn.Name = "pnlBtn";
+            this.pnlBtn.Size = new System.Drawing.Size(584, 30);
+            this.pnlBtn.TabIndex = 7;
             // 
             // FrmTabCap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(591, 316);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.pnlGroup);
+            this.Controls.Add(this.pnlBtn);
+            this.Controls.Add(this.pnlTab);
             this.Name = "FrmTabCap";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TabCap";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmTabCap_FormClosing);
             this.Load += new System.EventHandler(this.frmTabCap_Load);
-            this.panel1.ResumeLayout(false);
+            this.pnlBtn.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -139,9 +139,9 @@
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnSaveFocusedTab;
         private System.Windows.Forms.Button btnSaveAllTab;
-        private System.Windows.Forms.Panel pnlGroup;
+        private System.Windows.Forms.Panel pnlTab;
         private System.Windows.Forms.Button btnReadCap;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel pnlBtn;
     }
 }
 

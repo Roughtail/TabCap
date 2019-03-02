@@ -148,20 +148,20 @@ namespace TabCap
             this.Size = new Size() { Height = 500, Width = 700 };
 
             short marginSize = 2;
-            pnlGroup.Size = new Size()
+            pnlTab.Size = new Size()
             {
-                Height = this.Size.Height - (marginSize * 2),
-                Width = this.Size.Width - (marginSize * 2)
+                Height = this.ClientSize.Height - this.pnlBtn.ClientSize.Height - (this.Margin.Size.Height),
+                Width = this.ClientSize.Width - (this.Margin.Size.Width)
             };
-            pnlGroup.Location = new Point() { X = marginSize, Y = marginSize };
+            pnlTab.Location = new Point() { X = marginSize, Y = marginSize };
 
             string pnlName = "new";
-            pnlGroup.Controls.Add(new TabControl()
+            pnlTab.Controls.Add(new TabControl()
             {
                 Size = new Size()
                 {
-                    Height = pnlGroup.Size.Height - (marginSize * 2),
-                    Width = pnlGroup.Width - (marginSize * 2)
+                    Height = pnlTab.Height - (marginSize*2),
+                    Width = pnlTab.Width - (marginSize*2)
                 },
                 Name = pnlName,
                 Location = new Point() { X = marginSize, Y = marginSize },
