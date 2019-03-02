@@ -121,7 +121,7 @@ namespace TabCap
         /// <param name="e"></param>
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            TabControl nowTab = GetNowTab();
+            TabControl nowTab = GetNowTabControl();
             if (nowTab.TabPages.Count == 0)
             {
                 return;
@@ -160,8 +160,8 @@ namespace TabCap
             {
                 Size = new Size()
                 {
-                    Height = pnlTab.Height - (marginSize*2),
-                    Width = pnlTab.Width - (marginSize*2)
+                    Height = pnlTab.Height - (marginSize * 2),
+                    Width = pnlTab.Width - (marginSize * 2)
                 },
                 Name = pnlName,
                 Location = new Point() { X = marginSize, Y = marginSize },
@@ -177,7 +177,7 @@ namespace TabCap
         /// <param name="e"></param>
         private void btnSaveFocusedTab_Click(object sender, EventArgs e)
         {
-            TabControl nowTab = GetNowTab();
+            TabControl nowTab = GetNowTabControl();
             if (nowTab.SelectedTab is null)
             {
                 MessageBox.Show("Tab is empty");
@@ -210,7 +210,7 @@ namespace TabCap
         /// <param name="e"></param>
         private void btnSaveAllTab_Click(object sender, EventArgs e)
         {
-            TabControl nowTab = GetNowTab();
+            TabControl nowTab = GetNowTabControl();
 
             if (nowTab.SelectedTab is null)
             {
@@ -242,10 +242,10 @@ namespace TabCap
         /// <param name="e"></param>
         private void TextChangeControlsInTab(object sender, EventArgs e)
         {
-            TabControl nowTab = GetNowTab();
+            TabControl nowTabControl = GetNowTabControl();
 
-            var ins = (TextBox)(nowTab.SelectedTab.Controls[(int)ControlsInTab.TextBox]);
-            nowTab.SelectedTab.Text = ins.Text;
+            var targetTextBox = (TextBox)(nowTabControl.SelectedTab.Controls[(int)ControlsInTab.TextBox]);
+            nowTabControl.SelectedTab.Text = targetTextBox.Text;
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace TabCap
         /// <param name="e"></param>
         private void FrmTabCap_FormClosing(object sender, FormClosingEventArgs e)
         {
-            TabControl nowTab = GetNowTab();
+            TabControl nowTab = GetNowTabControl();
 
             if (nowTab.TabCount == 0)
             {
@@ -403,7 +403,7 @@ namespace TabCap
             return result;
         }
 
-        private TabControl GetNowTab()
+        private TabControl GetNowTabControl()
         {
             var result = this.Controls.Find(NameNowTab, true);
 
